@@ -46,6 +46,12 @@ class Agent
                                             goalX(gx), goalY(gy),label(l){}
         int getX()const{ return X; }
         int getY()const{ return Y; }
+
+        int getGoalX()const{ return goalX; }
+        int getGoalY()const{ return goalY; }
+
+        string getLabel()const{ return label; }
+
         void setX(int x)
         {
             X = x;
@@ -116,18 +122,63 @@ class MAPPGridState
                 return false;
             }
 
-            void succCoords( vector<xyc> &ret, int x, int y )
+            void succCoords( vector<Agent> &ret, const Agent &a )
             {/* 
               * Returns a vector of (x,y,c) possible sucessor coordinates.
               */ 
+                int x = a.getX();
+                int y = a.getY();
                 xyc candidates[ 5 ] = { {x, y, 0}, {x + 1, y, 1}, {x - 1, y, 1}, 
                                     {x, y + 1, 1}, {x, y - 1, 1} };
                 for( int i = 0; i < 5; ++i )
                 {
                     if( !hasWallAt( candidates[ i ].x, candidates[ i ].y ) )
                     {
-                        ret.push_back( candidates[ i ] );
+                        ret.push_back( Agent( candidates[ i ].x, candidates[ i ].y, 
+                                       a.getGoalX(), a.getGoalY(), a.getLabel() ) );
                     }
+                }
+            }
+
+            bool sameCoord(const Agent &a, const Agent &b)
+            {
+                /*
+                 * Test if two agents have the same coordinates 
+                 */ 
+                if( ( a.getX() == b.getX() ) && ( a.getY() == b.getY() ) )
+                {
+                    return true;
+                }
+                return false;
+            }
+            bool goodSuccessor( const vector<Agent> &successor )
+            {
+                /*TODO
+                 * If the new positions are representing a good successor state
+                 */ 
+                int len = agents.size();
+                for( int i = 0; i < len; ++i )
+                {
+                    for( int j = i + 1; j < len; ++j )
+                    {
+                        if( i!=j && sameCoord(successor[i], successor[j]) )
+                        {/* Double occupancy */
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            void successors()
+            {
+                cout<<" Successors:"<<endl;
+                vector<Agent> newCoords[5];
+                int ctr = 0;
+                for( const auto agent : agents )
+                {/* Get possible new coordinates of each agent */
+                    succCoords( newCoords[ctr], agent );
+                    ctr++;
                 }
             }
             void show() const
@@ -147,7 +198,7 @@ class MAPPGridState
                 */
                 for( unsigned int i = 0; i < agents.size(); ++i )
                 {
-                    if( ! (this->agents.at(i) == a.agents.at(i)) )
+                    if( !(this->agents.at(i) == a.agents.at(i)) )
                     {
                         return false;
                     }
@@ -164,7 +215,7 @@ int main()
 {
     Agent agent_1(2,2, 10,10,"Agent 1");
     Agent agent_2(2,2, 7,5,"Agent 2");
-    Agent agent_3(2,4, 3,4,"Agent 3");
+    Agent agent_3(2,3, 3,4,"Agent 3");
     Agent agent_4(2,5, 1,1,"Agent 4");
     Agent agent_5(2,6, 10,10,"Agent 5");
 
@@ -176,10 +227,6 @@ int main()
     MAPPGridState grid( &agents, &walls, 10, 10);
     agents.push_back(agent_1);
     agents.push_back(agent_3);
-    
-    MAPPGridState grid2(&agents,&walls,10,10);
-    /* Test equality of states */
-    cout<< (grid == grid2)<<endl;
-
+    cout<<(grid.goodSuccessor(agents))<<endl;
     return 0;
 }
