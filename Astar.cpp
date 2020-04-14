@@ -4,11 +4,6 @@
 using namespace std;
 
 
-typedef struct
-{/* Used for returning coordinate: x,y and cost c triples */
-    int x, y, c;
-}xyc;
-
 namespace heuristic
 {
     /*
@@ -43,7 +38,7 @@ class Agent
     */
     public:
         Agent(int x, int y, int gx, int gy, string l): X(x), Y(y), 
-                                            goalX(gx), goalY(gy),label(l){}
+                                            goalX(gx), goalY(gy), label(l){}
         int getX()const{ return X; }
         int getY()const{ return Y; }
 
@@ -69,6 +64,9 @@ class Agent
         {
             return heuristic::h( X, Y, goalX, goalY );
         }
+        void setCost( int c ){ cost = c; }
+        int getCost() const { return cost; };
+
         bool operator ==(const Agent &a)
         {/* Used for comparing states */
             if( this->X == a.getX() && this->Y == a.getY() )
@@ -80,11 +78,13 @@ class Agent
         void show() const
         {
             cout<<label<<" at:("<<X<<", "<<Y<<")"<<" goal: ("<<goalX<<", "<<
-                goalY<<")"<<" heuristic: "<<getH()<< endl;
+                goalY<<")"<<" heuristic: "<<getH()<<" cost: "<<cost<< endl;
         }
+        
     private:
         int X, Y;
         int goalX, goalY;
+        int cost = 0;
         string label;
 };
 
@@ -97,15 +97,14 @@ class MAPPGridState
     *   y size of the grid.
     */
     public:
-            MAPPGridState( vector<Agent> *agents, vector<Wall> *walls, 
+            MAPPGridState( vector<Agent>agents, vector<Wall>walls, 
                         int xsize, int ysize )
             {
-                this->agents = *agents;
-                agents->clear();
-                this->walls = *walls;
-                walls->clear();
+                this->agents = agents;
+                this->walls = walls;
                 this->xsize = xsize;
                 this->ysize = ysize;
+                numberAgents = this->agents.size();
             }
             bool hasWallAt( int x, int y )
             {
@@ -124,18 +123,23 @@ class MAPPGridState
 
             void succCoords( vector<Agent> &ret, const Agent &a )
             {/* 
-              * Returns a vector of (x,y,c) possible sucessor coordinates.
+              * Returns a vector of Agents, for each possible move.
               */ 
                 int x = a.getX();
                 int y = a.getY();
-                xyc candidates[ 5 ] = { {x, y, 0}, {x + 1, y, 1}, {x - 1, y, 1}, 
+                typedef struct
+                {/* Used for returning coordinate: x,y and cost c triples */
+                    int x, y, c;
+                }xyc;
+                xyc candidates[ 4 ] = { {x + 1, y, 1}, {x - 1, y, 1}, 
                                     {x, y + 1, 1}, {x, y - 1, 1} };
-                for( int i = 0; i < 5; ++i )
+                for( int i = 0; i < 4; ++i )
                 {
                     if( !hasWallAt( candidates[ i ].x, candidates[ i ].y ) )
                     {
                         ret.push_back( Agent( candidates[ i ].x, candidates[ i ].y, 
                                        a.getGoalX(), a.getGoalY(), a.getLabel() ) );
+                        ret.back().setCost(candidates[i].c);
                     }
                 }
             }
@@ -170,21 +174,44 @@ class MAPPGridState
                 return true;
             }
 
-            void successors()
+            void successors(vector<MAPPGridState> &newStates )
             {
-                cout<<" Successors:"<<endl;
-                vector<Agent> newCoords[5];
+                /*
+                 * Should return the list of successor states, together with the associated cost.
+                 */ 
+                vector<Agent> newCoords[numberAgents];
                 int ctr = 0;
                 for( const auto agent : agents )
                 {/* Get possible new coordinates of each agent */
                     succCoords( newCoords[ctr], agent );
                     ctr++;
                 }
+                for( unsigned int i = 0; i < numberAgents; ++i )
+                {
+                    /* Create a new state, by copying the current one and 
+                        replacing the corresponding agent with the new candidate */
+                    for( unsigned int j = 0; j < newCoords[ i ].size(); ++j )
+                    {
+                        /* Copy original agents vecotr */
+                        vector<Agent> agentsCopy(agents);
+                        agentsCopy.at(i) = newCoords[ i ][ j ];
+                        if( goodSuccessor(agentsCopy) )
+                        {
+                            newStates.push_back( MAPPGridState( agentsCopy, walls, xsize, ysize ) );
+                        }
+                        else
+                        {
+                            cout<<"!!!!!!!!!!!THIS IS NOT A VALID SUCCESSOR";
+                        }
+                        
+                    }
+                }
             }
             void show() const
             {/* 
              * Print agents
              */ 
+                cout<<endl<<"--------PRINTING STATE--------"<<endl<<endl;
                 for( const auto i : agents )
                 {
                     i.show();
@@ -207,26 +234,32 @@ class MAPPGridState
             }
         vector<Agent>agents;
         vector<Wall>walls;
-        int xsize, ysize;
+        int xsize, ysize, numberAgents;
 };
-
 
 int main()
 {
     Agent agent_1(2,2, 10,10,"Agent 1");
-    Agent agent_2(2,2, 7,5,"Agent 2");
-    Agent agent_3(2,3, 3,4,"Agent 3");
-    Agent agent_4(2,5, 1,1,"Agent 4");
-    Agent agent_5(2,6, 10,10,"Agent 5");
+    Agent agent_2(3,2, 7,5,"Agent 2");
+    Agent agent_3(4,3, 3,4,"Agent 3");
+    Agent agent_4(5,5, 1,1,"Agent 4");
+    Agent agent_5(6,6, 10,10,"Agent 5");
 
     vector<Agent> agents;
     agents.push_back(agent_1);
-    agents.push_back(agent_3);
+    agents.push_back(agent_2);
 
     vector<Wall> walls = { Wall(0,0), Wall(10,11) };
-    MAPPGridState grid( &agents, &walls, 10, 10);
-    agents.push_back(agent_1);
-    agents.push_back(agent_3);
-    cout<<(grid.goodSuccessor(agents))<<endl;
+    MAPPGridState grid( agents, walls, 10, 10);
+
+    cout<<"↓Original state↓";
+    grid.show();
+    cout<<"↓Successor states↓"<<endl;
+    vector<MAPPGridState> newStates;
+    grid.successors(newStates);
+    for( const auto state : newStates )
+    {
+        state.show();
+    }
     return 0;
 }
