@@ -11,12 +11,15 @@ namespace heuristic
      */ 
     static int h( int x, int y, int goalX, int goalY )
     {   /* Manhattan distance */
-        return abs(goalX-x) + abs(goalY-y);
+        return abs(goalX - x) + abs(goalY - y);
     }
 }
 
 class Wall
 {
+    /*
+    *   A wall represents a location where an agent is not allowed to be
+    */
     public:
         Wall(int x, int y)
         {
@@ -39,33 +42,19 @@ class Agent
     public:
         Agent(int x, int y, int gx, int gy, string l): X(x), Y(y), 
                                             goalX(gx), goalY(gy), label(l){}
-        int getX()const{ return X; }
-        int getY()const{ return Y; }
+        int getX() const { return X; }
+        int getY() const { return Y; }
 
-        int getGoalX()const{ return goalX; }
-        int getGoalY()const{ return goalY; }
+        int getGoalX() const { return goalX; }
+        int getGoalY() const { return goalY; }
 
-        string getLabel()const{ return label; }
+        string getLabel() const { return label; }
 
-        void setX(int x)
-        {
-            X = x;
-        }
-        void setY(int y)
-        {
-            Y = y;
-        }
-        void setGoal(int x, int y)
-        {
-            goalX = x;
-            goalY = y;
-        }
-        int getH()const
-        {
-            return heuristic::h( X, Y, goalX, goalY );
-        }
-        void setCost( int c ){ cost = c; }
-        int getCost() const { return cost; };
+        void setX(int x){X = x;}
+        void setY(int y){Y = y;}
+
+        /* Returns agent's heuristic h value */
+        int getH() const { return heuristic::h( X, Y, goalX, goalY );}
 
         bool operator ==(const Agent &a)
         {/* Used for comparing states */
@@ -76,15 +65,14 @@ class Agent
             return false;
         }
         void show() const
-        {
+        {/* Print agent information */
             cout<<label<<" at:("<<X<<", "<<Y<<")"<<" goal: ("<<goalX<<", "<<
-                goalY<<")"<<" heuristic: "<<getH()<<" cost: "<<cost<< endl;
+                goalY<<")"<<" heuristic: "<<getH()<<endl;
         }
         
     private:
         int X, Y;
         int goalX, goalY;
-        int cost = 0;
         string label;
 };
 
@@ -97,14 +85,24 @@ class MAPPGridState
     *   y size of the grid.
     */
     public:
-            MAPPGridState( vector<Agent>agents, vector<Wall>walls, 
-                        int xsize, int ysize )
+            MAPPGridState( vector<Agent>agents, unsigned int xsize, unsigned int ysize, unsigned int cost )
             {
                 this->agents = agents;
-                this->walls = walls;
-                this->xsize = xsize;
-                this->ysize = ysize;
+                this->xsize  = xsize;
+                this->ysize  = ysize;
                 numberAgents = this->agents.size();
+                currentCost  = cost;
+
+                /* Caclulate current heuristic by summing up agents' heuristics */
+                currentHeuristic = 0;
+                for( const auto a : agents )
+                {
+                    currentHeuristic += a.getH();
+                }
+            }
+            unsigned int getF() const
+            {
+                return currentCost + currentHeuristic;
             }
             bool hasWallAt( int x, int y )
             {
@@ -115,6 +113,7 @@ class MAPPGridState
                 {
                     if( i.getX() == x && i.getY() == y )
                     {
+                        cout<<"HAS WALL AT x: "<<x<<" y: "<<y<<endl;
                         return true;
                     }
                 }
@@ -135,11 +134,13 @@ class MAPPGridState
                                     {x, y + 1, 1}, {x, y - 1, 1} };
                 for( int i = 0; i < 4; ++i )
                 {
-                    if( !hasWallAt( candidates[ i ].x, candidates[ i ].y ) )
+                    /* Check that borders are not exceeded */
+                    if( candidates[i].x >=0 && candidates[i].x < xsize &&
+                        candidates[i].y >=0 && candidates[i].y < ysize &&
+                        hasWallAt( candidates[ i ].x, candidates[ i ].y ) == false )
                     {
                         ret.push_back( Agent( candidates[ i ].x, candidates[ i ].y, 
                                        a.getGoalX(), a.getGoalY(), a.getLabel() ) );
-                        ret.back().setCost(candidates[i].c);
                     }
                 }
             }
@@ -157,8 +158,8 @@ class MAPPGridState
             }
             bool goodSuccessor( const vector<Agent> &successor )
             {
-                /*TODO
-                 * If the new positions are representing a good successor state
+                /*
+                 * If the new successor is valid (no two agents are at the same coords)
                  */ 
                 int len = agents.size();
                 for( int i = 0; i < len; ++i )
@@ -194,28 +195,39 @@ class MAPPGridState
                     {
                         /* Copy original agents vecotr */
                         vector<Agent> agentsCopy(agents);
+                        
+                        /* Replace the newly moved agent */
                         agentsCopy.at(i) = newCoords[ i ][ j ];
+
+                        /* Calculate the heuristic sum */
+                        unsigned int heurSum = 0;
+                        for( unsigned int a = 0; a < numberAgents; ++a )
+                        {
+                            heurSum += agentsCopy[a].getH();
+                        }
+
                         if( goodSuccessor(agentsCopy) )
                         {
-                            newStates.push_back( MAPPGridState( agentsCopy, walls, xsize, ysize ) );
+                            /* Each new successor increases the current G cost by one */
+                            newStates.push_back( MAPPGridState( agentsCopy, xsize, ysize, currentCost + 1 ) );
                         }
                         else
-                        {
-                            cout<<"!!!!!!!!!!!THIS IS NOT A VALID SUCCESSOR";
+                        {/* Not a valid successor */
                         }
-                        
                     }
                 }
             }
             void show() const
-            {/* 
-             * Print agents
-             */ 
+            {
+                /* 
+                * Print state information
+                */ 
                 cout<<endl<<"--------PRINTING STATE--------"<<endl<<endl;
                 for( const auto i : agents )
                 {
                     i.show();
                 }
+                cout<<"G  "<<currentCost<<" H: "<<currentHeuristic<<" F: "<<this->getF()<<endl;
             }
             bool operator ==( MAPPGridState &a)
             {
@@ -233,14 +245,19 @@ class MAPPGridState
                 return true;
             }
         vector<Agent>agents;
-        vector<Wall>walls;
-        int xsize, ysize, numberAgents;
+        static vector<Wall>walls;
+        unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
+
+vector<Wall> MAPPGridState::walls = { };
 
 int main()
 {
-    Agent agent_1(2,2, 10,10,"Agent 1");
-    Agent agent_2(3,2, 7,5,"Agent 2");
+    /* Create walls */
+    MAPPGridState::walls.push_back(Wall(1,0));
+
+    Agent agent_1(0,0, 10,10,"Agent 1");
+    Agent agent_2(0,0, 7,5,"Agent 2");
     Agent agent_3(4,3, 3,4,"Agent 3");
     Agent agent_4(5,5, 1,1,"Agent 4");
     Agent agent_5(6,6, 10,10,"Agent 5");
@@ -249,17 +266,23 @@ int main()
     agents.push_back(agent_1);
     agents.push_back(agent_2);
 
-    vector<Wall> walls = { Wall(0,0), Wall(10,11) };
-    MAPPGridState grid( agents, walls, 10, 10);
+    MAPPGridState grid( agents, 10, 10,0 );
 
     cout<<"↓Original state↓";
     grid.show();
     cout<<"↓Successor states↓"<<endl;
     vector<MAPPGridState> newStates;
     grid.successors(newStates);
-    for( const auto state : newStates )
+
+    for( auto i:newStates)
     {
-        state.show();
+        i.show();
+        vector<MAPPGridState> nS;
+        i.successors(nS);
+        for( auto j:nS)
+        {
+            j.show();
+        }
     }
     return 0;
 }
