@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-using namespace std;
 
+using namespace std;
 
 namespace heuristic
 {
@@ -34,11 +34,12 @@ class Wall
 
 class Agent
 {
-    /*
+    /**
     *   An agent is defined by its x and y initial coordinates in the grid, and
     *   a goal position in the grid. An agent can calculate is own heuristic.
     *   An agent also has a label, for identification
     */
+
     public:
         Agent(int x, int y, int gx, int gy, string l): X(x), Y(y), 
                                             goalX(gx), goalY(gy), label(l){}
@@ -50,13 +51,13 @@ class Agent
 
         string getLabel() const { return label; }
 
-        void setX(int x){X = x;}
-        void setY(int y){Y = y;}
+        void setX(int x) { X = x; }
+        void setY(int y) { Y = y; }
 
         /* Returns agent's heuristic h value */
-        int getH() const { return heuristic::h( X, Y, goalX, goalY );}
+        int getH() const { return heuristic::h(X, Y, goalX, goalY); }
 
-        bool operator ==(const Agent &a)
+        bool operator == (const Agent &a)
         {/* Used for comparing states */
             if( this->X == a.getX() && this->Y == a.getY() )
             {
@@ -75,7 +76,6 @@ class Agent
         int goalX, goalY;
         string label;
 };
-
 
 class MAPPGridState
 {
@@ -104,7 +104,7 @@ class MAPPGridState
             {
                 return currentCost + currentHeuristic;
             }
-            bool hasWallAt( int x, int y )
+            static bool hasWallAt( int x, int y )
             {
                 /*
                 * Check if there are walls at specific location
@@ -113,14 +113,13 @@ class MAPPGridState
                 {
                     if( i.getX() == x && i.getY() == y )
                     {
-                        cout<<"HAS WALL AT x: "<<x<<" y: "<<y<<endl;
                         return true;
                     }
                 }
                 return false;
             }
 
-            void succCoords( vector<Agent> &ret, const Agent &a )
+            void succCoords( vector<Agent> &ret, const Agent &a ) const
             {/* 
               * Take an Agent, move it right, left, up, down, and return
               * the new vector of Agents. But check for border and wall
@@ -236,8 +235,8 @@ class MAPPGridState
             bool operator ==( MAPPGridState &a)
             {
                 /*
-                *  Two states are equal if their agents' respective coordinates
-                *  are identical.
+                * Two states are equal if their agents' respective coordinates
+                * are identical.
                 */
                 for( unsigned int i = 0; i < agents.size(); ++i )
                 {
@@ -257,11 +256,11 @@ vector<Wall> MAPPGridState::walls = { };
 
 int main()
 {
-    /* Create walls */
+    // Create walls 
     MAPPGridState::walls.push_back(Wall(1,0));
 
     Agent agent_1(0,0, 10,10,"Agent 1");
-    Agent agent_2(0,0, 7,5,"Agent 2");
+    Agent agent_2(0,1, 7,5,"Agent 2");
     Agent agent_3(4,3, 3,4,"Agent 3");
     Agent agent_4(5,5, 1,1,"Agent 4");
     Agent agent_5(6,6, 10,10,"Agent 5");
@@ -274,7 +273,7 @@ int main()
 
     cout<<"↓Original state↓";
     grid.show();
-    cout<<"↓Successor states↓"<<endl;
+    cout<<endl<<"↓Successor states↓"<<endl;
     vector<MAPPGridState> newStates = grid.successors();
 
     for( auto i:newStates)
