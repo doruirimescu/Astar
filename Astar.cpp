@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include "Astar.hpp"
 using namespace std;
 
 namespace heuristic
@@ -253,7 +253,7 @@ class MAPPGridState
 };
 
 vector<Wall> MAPPGridState::walls = { };
-
+/*
 int main()
 {
     // Create walls 
@@ -287,3 +287,4 @@ int main()
     }
     return 0;
 }
+*/
