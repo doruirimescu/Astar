@@ -177,12 +177,13 @@ class MAPPGridState
                 return true;
             }
 
-            void successors(vector<MAPPGridState> &newStates )
+            vector<MAPPGridState> successors()
             {
                 /*
-                 * Should return the list of successor states, together with the associated cost.
+                 * Return the vector of successor states
                  */ 
                 vector<Agent> newCoords[numberAgents];
+                vector<MAPPGridState> newStates;
                 int ctr = 0;
                 for( const auto agent : agents )
                 {/* Get possible new coordinates of each agent */
@@ -218,6 +219,7 @@ class MAPPGridState
                         }
                     }
                 }
+                return newStates;
             }
             void show() const
             {
@@ -273,14 +275,12 @@ int main()
     cout<<"↓Original state↓";
     grid.show();
     cout<<"↓Successor states↓"<<endl;
-    vector<MAPPGridState> newStates;
-    grid.successors(newStates);
+    vector<MAPPGridState> newStates = grid.successors();
 
     for( auto i:newStates)
     {
         i.show();
-        vector<MAPPGridState> nS;
-        i.successors(nS);
+        vector<MAPPGridState> nS = i.successors();
         for( auto j:nS)
         {
             j.show();
