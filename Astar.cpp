@@ -9,7 +9,7 @@ namespace heuristic
     /*
      * A collection of heuristic functions (add more if needed) 
      */ 
-    static int h( int x, int y, int goalX, int goalY )
+    static inline unsigned int h( int x, int y, int goalX, int goalY )
     {   /* Manhattan distance */
         return abs(goalX - x) + abs(goalY - y);
     }
@@ -100,7 +100,7 @@ class MAPPGridState
                     currentHeuristic += a.getH();
                 }
             }
-            unsigned int getF() const
+            inline unsigned int getF() const
             {
                 return currentCost + currentHeuristic;
             }
@@ -122,16 +122,18 @@ class MAPPGridState
 
             void succCoords( vector<Agent> &ret, const Agent &a )
             {/* 
-              * Returns a vector of Agents, for each possible move.
+              * Take an Agent, move it right, left, up, down, and return
+              * the new vector of Agents. But check for border and wall
+              * collisions.
               */ 
                 int x = a.getX();
                 int y = a.getY();
                 typedef struct
-                {/* Used for returning coordinate: x,y and cost c triples */
-                    int x, y, c;
-                }xyc;
-                xyc candidates[ 4 ] = { {x + 1, y, 1}, {x - 1, y, 1}, 
-                                    {x, y + 1, 1}, {x, y - 1, 1} };
+                {/* Used for returning coordinate: x,y */
+                    int x, y;
+                }xy;
+                xy candidates[ 4 ] = { {x + 1, y}, {x - 1, y}, 
+                                    {x, y + 1}, {x, y - 1} };
                 for( int i = 0; i < 4; ++i )
                 {
                     /* Check that borders are not exceeded */
@@ -145,7 +147,7 @@ class MAPPGridState
                 }
             }
 
-            bool sameCoord(const Agent &a, const Agent &b)
+            inline bool sameCoord(const Agent &a, const Agent &b)
             {
                 /*
                  * Test if two agents have the same coordinates 
