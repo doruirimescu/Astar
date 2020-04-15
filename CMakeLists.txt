@@ -11,9 +11,7 @@ enable_testing()
 
 add_subdirectory(googletest)
 
-set(Headers
-    Astar.hpp
-)
+
 
 set(Sources
     Astar.cpp
