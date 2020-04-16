@@ -57,7 +57,7 @@ class Agent
         /* Returns agent's heuristic h value */
         int getH() const { return heuristic::h(X, Y, goalX, goalY); }
 
-        bool operator == (const Agent &a)
+        bool operator == (const Agent &a)const
         {/* Used for comparing states */
             if( this->X == a.getX() && this->Y == a.getY() )
             {
@@ -163,6 +163,11 @@ class MAPPGridState
                  * If the new successor is valid (no two agents are at the same coords)
                  */ 
                 int len = agents.size();
+                if( len != successor.size() )
+                {
+                    throw "Successor state has a different number of agents"
+                                    "than the current state !!!";
+                }
                 for( int i = 0; i < len; ++i )
                 {
                     for( int j = i + 1; j < len; ++j )
