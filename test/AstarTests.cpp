@@ -106,12 +106,51 @@ TEST_F(AstarTests, HAS_WALL_AT_2)
     EXPECT_EQ( grid.hasWallAt(0,1), false);
 }
 
-TEST_F(AstarTests, SUCC_COORDS)
+TEST_F(AstarTests, SUCC_COORDS_1)
 {
-    /**
-     * !IMPLEMENT THIS!
-     */ 
+    vector<Agent> agents;
+    agents.push_back(agent_1);
+
+    MAPPGridState grid( agents, 10, 10, 5 );
+
+    agents.clear();
+    grid.succCoords(agents, agent_1);
+
+    vector<Agent> succAgents;
+    succAgents.push_back(agent_1);
+    succAgents.push_back(agent_1);
+    succAgents.at(0).setX( succAgents.at(0).getX() + 1 );
+    succAgents.at(1).setY( succAgents.at(1).getY() + 1);
+
+    ASSERT_EQ( succAgents , agents );
 }
+
+TEST_F(AstarTests, SUCC_COORDS_2)
+{
+    vector<Agent> agents;
+    agents.push_back(agent_4);
+
+    MAPPGridState grid( agents, 10, 10, 5 );
+
+    agents.clear();
+    grid.succCoords(agents, agent_4);
+
+    vector<Agent> succAgents;
+    succAgents.push_back(agent_4);
+    succAgents.push_back(agent_4);
+    succAgents.push_back(agent_4);
+    succAgents.push_back(agent_4);
+
+    succAgents.at(0).setX( succAgents.at(0).getX() + 1 );
+    succAgents.at(1).setX( succAgents.at(1).getX() - 1);
+    succAgents.at(2).setY( succAgents.at(2).getY() + 1);
+    succAgents.at(3).setY( succAgents.at(3).getY() - 1);
+
+
+    EXPECT_EQ( succAgents , agents );
+    
+}
+
 TEST_F(AstarTests, SAME_COORD)
 {
     vector<Agent> agents;
@@ -125,9 +164,47 @@ TEST_F(AstarTests, SAME_COORD)
 
 TEST_F(AstarTests, GOOD_SUCCESSOR)
 {
-    /**
-     * !IMPLEMENT THIS!
-     */ 
+    /*
+    * Good successor only compares the coordinates of the agents 
+    * in the successor state, it only matters that the size of the grid.agents
+    * and successors are the same.
+    */  
+    vector<Agent> agents;
+    vector<Agent> successors;
+    agents.push_back(agent_1);
+    agents.push_back(agent_2);
+    agents.push_back(agent_3);
+
+    MAPPGridState grid( agents, 10, 10, 5 );
+
+    successors.push_back(agent_1);
+    successors.push_back(agent_2);
+    successors.push_back(agent_1);
+    EXPECT_EQ( grid.goodSuccessor(successors), false);
+
+    successors.clear();
+    successors.push_back(agent_1);
+    successors.push_back(agent_2);
+    successors.push_back(agent_3);
+    EXPECT_EQ( grid.goodSuccessor(successors), true );
+
+    successors.clear();
+    successors.push_back(agent_1);
+    successors.push_back(agent_1);
+    successors.push_back(agent_2);
+    EXPECT_EQ( grid.goodSuccessor(successors), false );
+
+    successors.clear();
+    successors.push_back(agent_1);
+    successors.push_back(agent_2);
+    successors.push_back(agent_2);
+    EXPECT_EQ( grid.goodSuccessor(successors), false);
+
+    ASSERT_NO_THROW( grid.goodSuccessor(successors) );
+
+    /* If the successor has more agents than the current state, expect exception */
+    successors.push_back(agent_3);
+    ASSERT_ANY_THROW( grid.goodSuccessor(successors) );
 }
 
 TEST_F(AstarTests, SUCCESSORS)
