@@ -245,7 +245,7 @@ class MAPPGridState
                 }
                 cout<<"G  "<<currentCost<<" H: "<<currentHeuristic<<" F: "<<this->getF()<<endl;
             }
-            bool operator ==( MAPPGridState &a)
+            bool operator ==( const MAPPGridState &a)const
             {
                 /*
                 * Two states are equal if their agents' respective coordinates
@@ -265,4 +265,25 @@ class MAPPGridState
         unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
 
+struct CompareStates
+{
+    bool operator()( MAPPGridState const &s1, MAPPGridState const &s2 )
+    {
+        return s1.getF() <= s2.getF();
+    }
+};
+
+struct StateHasher
+{ 
+    size_t operator()(const MAPPGridState &k) const
+    {
+        size_t hash = 0;
+        for( const Agent &agent : k.agents )
+        {
+            hash = hash*(k.xsize*k.ysize) + agent.getX() + k.xsize*agent.getY();
+        }
+        return hash;
+    }
+};
 vector<Wall> MAPPGridState::walls = {};
+
