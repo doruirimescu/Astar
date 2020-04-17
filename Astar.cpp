@@ -41,8 +41,10 @@ class Agent
     */
 
     public:
+        static int ctr;
         Agent(int x, int y, int gx, int gy, string l): X(x), Y(y), 
                                             goalX(gx), goalY(gy), label(l){}
+
         int getX() const { return X; }
         int getY() const { return Y; }
 
@@ -76,7 +78,7 @@ class Agent
         int goalX, goalY;
         string label;
 };
-
+int Agent::ctr = 0;
 class MAPPGridState
 {
     /*
@@ -85,9 +87,9 @@ class MAPPGridState
     *   y size of the grid.
     */
     public:
-            MAPPGridState( vector<Agent>agents, unsigned int xsize, unsigned int ysize, unsigned int cost )
+            MAPPGridState( vector<Agent>&agents, unsigned int xsize, unsigned int ysize, unsigned int cost )
             {
-                this->agents = agents;
+                this->agents =agents;
                 this->xsize  = xsize;
                 this->ysize  = ysize;
                 numberAgents = this->agents.size();
@@ -95,7 +97,7 @@ class MAPPGridState
 
                 /* Caclulate current heuristic by summing up agents' heuristics */
                 currentHeuristic = 0;
-                for( const auto a : agents )
+                for( const auto &a : agents )
                 {
                     currentHeuristic += a.getH();
                 }
@@ -109,7 +111,7 @@ class MAPPGridState
                 /*
                 * Check if there are walls at specific location
                 */
-                for( const auto i : walls )
+                for( const auto &i : walls )
                 {
                     if( i.getX() == x && i.getY() == y )
                     {
@@ -140,13 +142,13 @@ class MAPPGridState
                         candidates[i].y >=0 && candidates[i].y < ysize &&
                         hasWallAt( candidates[ i ].x, candidates[ i ].y ) == false )
                     {
-                        ret.push_back( Agent( candidates[ i ].x, candidates[ i ].y, 
+                        ret.emplace_back( Agent( candidates[ i ].x, candidates[ i ].y, 
                                        a.getGoalX(), a.getGoalY(), a.getLabel() ) );
                     }
                 }
             }
 
-            inline bool sameCoord(const Agent &a, const Agent &b)
+            inline bool sameCoord( const Agent &a, const Agent &b )
             {
                 /*
                  * Test if two agents have the same coordinates 
@@ -188,8 +190,13 @@ class MAPPGridState
                  */ 
                 vector<Agent> newCoords[numberAgents];
                 vector<MAPPGridState> newStates;
+                newStates.reserve(4);
+                for( int i = 0; i < numberAgents; ++i )
+                {
+                    newCoords[i].reserve(4); //we can get maximum 4 new coordinates.
+                }
                 int ctr = 0;
-                for( const auto agent : agents )
+                for( const auto &agent : agents )
                 {/* Get possible new coordinates of each agent */
                     succCoords( newCoords[ctr], agent );
                     ctr++;
@@ -200,27 +207,28 @@ class MAPPGridState
                         replacing the corresponding agent with the new candidate */
                     for( unsigned int j = 0; j < newCoords[ i ].size(); ++j )
                     {
-                        /* Copy original agents vecotr */
-                        vector<Agent> agentsCopy(agents);
+                        /* Make a copy of the agent whose position will be modified */
+                        Agent tmp    = agents.at(i);
+
+                        /* Now, the agents vector holds the successor candidate position */
+                        agents.at(i) = newCoords[ i ][ j ];
                         
-                        /* Replace the newly moved agent */
-                        agentsCopy.at(i) = newCoords[ i ][ j ];
-
-                        /* Calculate the heuristic sum */
-                        unsigned int heurSum = 0;
-                        for( unsigned int a = 0; a < numberAgents; ++a )
+                        if( goodSuccessor(agents) )
                         {
-                            heurSum += agentsCopy[a].getH();
-                        }
-
-                        if( goodSuccessor(agentsCopy) )
-                        {
+                            /* Calculate the heuristic sum */
+                            unsigned int heurSum = 0;
+                            for( const auto &agent : agents )
+                            {
+                                heurSum += agent.getH();
+                            }
                             /* Each new successor increases the current G cost by one */
-                            newStates.push_back( MAPPGridState( agentsCopy, xsize, ysize, currentCost + 1 ) );
+                            newStates.emplace_back( MAPPGridState( agents, xsize, ysize, currentCost + 1 ) );
                         }
                         else
                         {/* Not a valid successor */
                         }
+                        /* Retrieve modified agents to current value */
+                        agents.at(i) = tmp;
                     }
                 }
                 return newStates;
@@ -231,7 +239,7 @@ class MAPPGridState
                 * Print state information
                 */ 
                 cout<<endl<<"--------PRINTING STATE--------"<<endl<<endl;
-                for( const auto i : agents )
+                for( const auto &i : agents )
                 {
                     i.show();
                 }
@@ -257,4 +265,4 @@ class MAPPGridState
         unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
 
-vector<Wall> MAPPGridState::walls = { };
+vector<Wall> MAPPGridState::walls = {};
