@@ -93,7 +93,6 @@ class MAPPGridState
                 this->xsize  = xsize;
                 this->ysize  = ysize;
                 numberAgents = this->agents.size();
-                currentCost  = cost;
 
                 /* Caclulate current heuristic by summing up agents' heuristics */
                 currentHeuristic = 0;
@@ -101,10 +100,15 @@ class MAPPGridState
                 {
                     currentHeuristic += a.getH();
                 }
+                
             }
             inline unsigned int getF() const
             {
                 return currentCost + currentHeuristic;
+            }
+            inline unsigned int getH() const
+            {
+                return currentHeuristic;
             }
             static bool hasWallAt( int x, int y )
             {
@@ -269,7 +273,7 @@ struct CompareStates
 {
     bool operator()( MAPPGridState const &s1, MAPPGridState const &s2 )
     {
-        return s1.getF() <= s2.getF();
+        return s1.getF() > s2.getF();
     }
 };
 
