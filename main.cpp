@@ -12,21 +12,24 @@ int main()
     Agent agent_5(6,6, 10,10,"Agent 5");
 
     vector<Agent> agents;
-    agents.push_back(agent_1);
-    agents.push_back(agent_2);
+    //! Reserve the number of agents we will emplace_back
+    agents.reserve(2);
 
-    MAPPGridState grid( agents, 10, 10,0 );
+    agents.emplace_back(agent_1);
+    agents.emplace_back(agent_2);
+
+    MAPPGridState grid( agents, 10, 10, 0 );
 
     cout<<"↓Original state↓";
     grid.show();
     cout<<endl<<"↓Successor states↓"<<endl;
     vector<MAPPGridState> newStates = grid.successors();
 
-    for( auto i:newStates)
+    for( auto &i:newStates )
     {
         i.show();
         vector<MAPPGridState> nS = i.successors();
-        for( auto j:nS)
+        for( auto &j:nS)
         {
             j.show();
         }
