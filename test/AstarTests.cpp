@@ -213,7 +213,40 @@ TEST_F(AstarTests, GOOD_SUCCESSOR)
 
 TEST_F(AstarTests, SUCCESSORS)
 {
-    /**
-     * !IMPLEMENT THIS!
-     */ 
+    vector<Agent> agents;
+    agents.push_back(agent_1);
+
+    MAPPGridState grid( agents, 10, 10, 5 );
+    vector<MAPPGridState> successors = grid.successors();
+    
+    agents = { Agent(1, 0, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(0), MAPPGridState(agents, 10, 10, 5));
+
+    agents = { Agent(0, 1, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(1), MAPPGridState(agents, 10, 10, 5));
+
+    EXPECT_EQ(successors.size(), 2);
+
+    MAPPGridState::walls.push_back( Wall(1,0) );
+    successors = grid.successors();
+    EXPECT_EQ(successors.size(),1);
+ 
+    agents = { Agent(0, 1, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(0), 
+    MAPPGridState(agents, 10, 10, 5));
+
+    agents = { Agent(5, 5, 10, 15, "Agent 1") };
+    MAPPGridState grid2(agents, 10, 10, 5);
+    successors = grid2.successors();
+
+    EXPECT_EQ(successors.size(), 4);
+
+    agents = { Agent(6, 5, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(0), MAPPGridState(agents,10,10,5));
+    agents = { Agent(4, 5, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(1), MAPPGridState(agents,10,10,5));
+    agents = { Agent(5, 6, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(2), MAPPGridState(agents,10,10,5));
+    agents = { Agent(5, 4, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(3), MAPPGridState(agents,10,10,5));
 }
