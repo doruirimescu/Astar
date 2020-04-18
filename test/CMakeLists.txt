@@ -6,6 +6,11 @@ project(${This} C CXX)
 set(Sources
 AstarTests.cpp
 )
+set(Headers 
+wall.hpp
+heuristic.hpp
+agent.hpp
+)
 add_executable(${This} ${Sources})
 
 target_link_libraries(${This} PUBLIC
