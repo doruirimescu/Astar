@@ -16,13 +16,14 @@ set(Headers
     wall.hpp
     heuristic.hpp
     MAPPGridState.hpp
+    astar.hpp
 )
-
 
 set(Sources
     heuristic.cpp
     agent.cpp
     MAPPGridState.cpp
+    astar.cpp
 )
 add_library( ${This} STATIC ${Sources} ${Headers} )
 
