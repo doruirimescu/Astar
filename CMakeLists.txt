@@ -12,11 +12,18 @@ enable_testing()
 add_subdirectory(googletest)
 
 
-
-set(Sources
-    Astar.cpp
+set(Headers 
+    wall.hpp
+    heuristic.hpp
+    MAPPGridState.hpp
 )
 
+
+set(Sources
+    heuristic.cpp
+    agent.cpp
+    MAPPGridState.cpp
+)
 add_library( ${This} STATIC ${Sources} ${Headers} )
 
 add_subdirectory(test)

@@ -1,38 +1,100 @@
-#include "Astar.cpp"
+#include <unordered_map>
+#include <queue>
+#include<algorithm>
 
+#include"wall.hpp"
+#include "heuristic.hpp"
+#include"agent.hpp"
+#include "MAPPGridState.hpp"
+
+std::vector<Wall> MAPPGridState::walls = {};
+
+inline unsigned int mapRetrieve(const std::unordered_map<MAPPGridState, unsigned int> &m,
+                        const MAPPGridState &n)
+{
+    if ( m.find(n) != m.end() )
+    {
+        return m.find(n)->second;
+    }
+    else
+    {
+        return 10000;
+    }
+}
 int main()
 {
-    // Create walls 
-    MAPPGridState::walls.push_back(Wall(1,0));
+    /* Create walls */
+    MAPPGridState::walls.push_back(Wall(1,1));
+    MAPPGridState::walls.push_back(Wall(2,2));
 
-    Agent agent_1(0,0, 10,10,"Agent 1");
+    Agent agent_1(0,0, 10,0,"Agent 1");
     Agent agent_2(0,1, 7,5,"Agent 2");
-    Agent agent_3(4,3, 3,4,"Agent 3");
-    Agent agent_4(5,5, 1,1,"Agent 4");
-    Agent agent_5(6,6, 10,10,"Agent 5");
 
-    vector<Agent> agents;
-    //! Reserve the number of agents we will emplace_back
-    agents.reserve(2);
+    std::vector<Agent> agents;
 
     agents.emplace_back(agent_1);
     agents.emplace_back(agent_2);
 
-    MAPPGridState grid( agents, 10, 10, 0 );
-
-    cout<<"↓Original state↓";
+    MAPPGridState grid( agents, 100, 100, 0 );
+    std::cout<<"↓Original state↓";
     grid.show();
-    cout<<endl<<"↓Successor states↓"<<endl;
-    vector<MAPPGridState> newStates = grid.successors();
+    std::vector<MAPPGridState> newStates = grid.successors();
 
-    for( auto &i:newStates )
+    /* A* algo */
+    std::priority_queue<MAPPGridState, std::vector<MAPPGridState>> Q;
+    Q.push( grid );
+    
+    MAPPGridState n = grid;
+    std::unordered_map<MAPPGridState, MAPPGridState> predecessors;
+    std::unordered_map<MAPPGridState, unsigned int> minCost;
+
+    minCost.insert({n,0});
+    bool going = true;
+    while( !Q.empty() && going )
     {
-        i.show();
-        vector<MAPPGridState> nS = i.successors();
-        for( auto &j:nS)
+        n = Q.top();
+        Q.pop();
+        for( auto &succ : n.successors() )
+        { 
+            /* Min cost */
+            unsigned int mcn, mcs;
+            mcn = mapRetrieve( minCost, n );
+            mcs = mapRetrieve( minCost, succ );
+
+            if( mcn + 1 < mcs )
+            {
+                minCost.insert( {succ, mcn + 1} );
+                succ.currentCost = mcn + 1;
+                Q.push(succ);
+                predecessors.insert( {succ, n} );
+            }
+        }
+        if( n.getH() == 0 )
         {
-            j.show();
+            going = false;
+            std::cout<<"Found a result"<<std::endl;
         }
     }
+    
+    /* std::vector that holds state trajectory */
+    std::vector<MAPPGridState> results;
+    results.reserve(10);
+
+    results.emplace_back(n);
+    while( !(predecessors.find(n)->second == grid))
+    {
+        n = predecessors.find(n)->second;
+        results.emplace_back(n);
+    }
+    n = predecessors.find(n)->second;
+    results.emplace_back(n);
+
+    std::reverse(results.begin(), results.end());
+    for( auto iter = results.begin(); iter < results.end(); ++iter )
+    {
+        iter->show();
+    }
+
+    std::cout<<results.size();
     return 0;
 }

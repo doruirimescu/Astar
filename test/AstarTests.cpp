@@ -1,6 +1,10 @@
-#include "../Astar.cpp"
-
+#include"../wall.hpp"
+#include"../agent.hpp"
+#include"../MAPPGridState.hpp"
 #include<gtest/gtest.h>
+using namespace std;
+
+vector<Wall> MAPPGridState::walls = {};
 
 struct AstarTests: public ::testing::Test
 {
@@ -11,7 +15,6 @@ struct AstarTests: public ::testing::Test
     Agent agent_4 = Agent(5,5, 1,1,"Agent 4");
     Agent agent_5 = Agent(6,6, 10,10,"Agent 5");
     Agent agent_6 = Agent(0,0, 13,10,"Agent 6");
-    
 };
 /* Heuristic tests */
 TEST_F(AstarTests, HEURISTIC)
@@ -28,6 +31,7 @@ TEST_F(AstarTests, WALL)
     Wall w(5, -10);
     EXPECT_EQ(w.getX(), 5 );
     EXPECT_EQ(w.getY(), -10);
+    EXPECT_NE(w.getX(),-10);
 }
 
 /* Agent tests*/
