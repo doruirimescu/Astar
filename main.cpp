@@ -21,23 +21,8 @@ inline unsigned int mapRetrieve(const std::unordered_map<MAPPGridState, unsigned
         return 10000;
     }
 }
-int main()
+std::vector<MAPPGridState> Astar( MAPPGridState &grid)
 {
-    /* Create walls */
-    MAPPGridState::walls.push_back(Wall(1,1));
-    MAPPGridState::walls.push_back(Wall(2,2));
-
-    Agent agent_1(0,0, 10,0,"Agent 1");
-    Agent agent_2(0,1, 7,5,"Agent 2");
-
-    std::vector<Agent> agents;
-
-    agents.emplace_back(agent_1);
-    agents.emplace_back(agent_2);
-
-    MAPPGridState grid( agents, 100, 100, 0 );
-    std::cout<<"↓Original state↓";
-    grid.show();
     std::vector<MAPPGridState> newStates = grid.successors();
 
     /* A* algo */
@@ -64,7 +49,7 @@ int main()
             if( mcn + 1 < mcs )
             {
                 minCost.insert( {succ, mcn + 1} );
-                succ.currentCost = mcn + 1;
+                succ.setCost( mcn + 1 );
                 Q.push(succ);
                 predecessors.insert( {succ, n} );
             }
@@ -81,7 +66,7 @@ int main()
     results.reserve(10);
 
     results.emplace_back(n);
-    while( !(predecessors.find(n)->second == grid))
+    while( !(predecessors.find(n)->second == grid) )
     {
         n = predecessors.find(n)->second;
         results.emplace_back(n);
@@ -90,11 +75,39 @@ int main()
     results.emplace_back(n);
 
     std::reverse(results.begin(), results.end());
+    return results;
+}
+int main()
+{
+    /* Create walls */
+    MAPPGridState::walls.push_back(Wall(1, 5));
+    MAPPGridState::walls.push_back(Wall(9, 6));
+    MAPPGridState::walls.push_back(Wall(0, 1));
+    MAPPGridState::walls.push_back(Wall(9, 10));
+    MAPPGridState::walls.push_back(Wall(19,13));
+
+    Agent agent_1(0,0,  10,10,  "Agent 1");
+    Agent agent_2(5,5,  15,17,  "Agent 2");
+    Agent agent_3(3,8,  19,14,  "Agent 3");
+    Agent agent_4(15,12, 1,1,   "Agent 4");
+
+    std::vector<Agent> agents;
+
+    agents.emplace_back(agent_1);
+    agents.emplace_back(agent_2);
+    agents.emplace_back(agent_3);
+    agents.emplace_back(agent_4);
+
+    MAPPGridState grid( agents, 100, 100, 0 );
+
+    
+    std::cout<<"↓Original state↓";
+    grid.show();
+    std::vector<MAPPGridState> results = Astar(grid);
     for( auto iter = results.begin(); iter < results.end(); ++iter )
     {
         iter->show();
     }
-
-    std::cout<<results.size();
+    
     return 0;
 }
