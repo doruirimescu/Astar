@@ -9,6 +9,18 @@
 
 std::vector<Wall> MAPPGridState::walls = {};
 
+inline unsigned int mapRetrieve(const std::unordered_map<MAPPGridState, unsigned int> &m,
+                        const MAPPGridState &n)
+{
+    if ( m.find(n) != m.end() )
+    {
+        return m.find(n)->second;
+    }
+    else
+    {
+        return 10000;
+    }
+}
 int main()
 {
     /* Create walls */
@@ -45,16 +57,10 @@ int main()
         for( auto &succ : n.successors() )
         { 
             /* Min cost */
-            unsigned int mcn = 10000, mcs = 10000;
-            if ( minCost.find(n) != minCost.end() )
-            {
-                
-                mcn = minCost.find(n)->second;
-            }
-            if ( minCost.find(succ) != minCost.end() )
-            {
-                mcs = minCost.find(succ)->second;
-            }
+            unsigned int mcn, mcs;
+            mcn = mapRetrieve( minCost, n );
+            mcs = mapRetrieve( minCost, succ );
+
             if( mcn + 1 < mcs )
             {
                 minCost.insert( {succ, mcn + 1} );
