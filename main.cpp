@@ -1,7 +1,5 @@
-#include <unordered_map>
-#include <queue>
-#include<algorithm>
 
+#include "Astar.hpp"
 #include"wall.hpp"
 #include "heuristic.hpp"
 #include"agent.hpp"
@@ -9,74 +7,6 @@
 
 std::vector<Wall> MAPPGridState::walls = {};
 
-inline unsigned int mapRetrieve(const std::unordered_map<MAPPGridState, unsigned int> &m,
-                        const MAPPGridState &n)
-{
-    if ( m.find(n) != m.end() )
-    {
-        return m.find(n)->second;
-    }
-    else
-    {
-        return 10000;
-    }
-}
-std::vector<MAPPGridState> Astar( MAPPGridState &grid)
-{
-    std::vector<MAPPGridState> newStates = grid.successors();
-
-    /* A* algo */
-    std::priority_queue<MAPPGridState, std::vector<MAPPGridState>> Q;
-    Q.push( grid );
-    
-    MAPPGridState n = grid;
-    std::unordered_map<MAPPGridState, MAPPGridState> predecessors;
-    std::unordered_map<MAPPGridState, unsigned int> minCost;
-
-    minCost.insert({n,0});
-    bool going = true;
-    while( !Q.empty() && going )
-    {
-        n = Q.top();
-        Q.pop();
-        for( auto &succ : n.successors() )
-        { 
-            /* Min cost */
-            unsigned int mcn, mcs;
-            mcn = mapRetrieve( minCost, n );
-            mcs = mapRetrieve( minCost, succ );
-
-            if( mcn + 1 < mcs )
-            {
-                minCost.insert( {succ, mcn + 1} );
-                succ.setCost( mcn + 1 );
-                Q.push(succ);
-                predecessors.insert( {succ, n} );
-            }
-        }
-        if( n.getH() == 0 )
-        {
-            going = false;
-            std::cout<<"Found a result"<<std::endl;
-        }
-    }
-    
-    /* std::vector that holds state trajectory */
-    std::vector<MAPPGridState> results;
-    results.reserve(10);
-
-    results.emplace_back(n);
-    while( !(predecessors.find(n)->second == grid) )
-    {
-        n = predecessors.find(n)->second;
-        results.emplace_back(n);
-    }
-    n = predecessors.find(n)->second;
-    results.emplace_back(n);
-
-    std::reverse(results.begin(), results.end());
-    return results;
-}
 int main()
 {
     /* Create walls */
@@ -103,7 +33,7 @@ int main()
     
     std::cout<<"↓Original state↓";
     grid.show();
-    std::vector<MAPPGridState> results = Astar(grid);
+    std::vector<MAPPGridState> results = Astar::astar(grid);
     for( auto iter = results.begin(); iter < results.end(); ++iter )
     {
         iter->show();
