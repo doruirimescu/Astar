@@ -1,6 +1,7 @@
 #include"../wall.hpp"
 #include"../agent.hpp"
 #include"../MAPPGridState.hpp"
+#include"../astar.hpp"
 #include<gtest/gtest.h>
 using namespace std;
 
@@ -213,7 +214,101 @@ TEST_F(AstarTests, GOOD_SUCCESSOR)
 
 TEST_F(AstarTests, SUCCESSORS)
 {
-    /**
-     * !IMPLEMENT THIS!
-     */ 
+    vector<Agent> agents;
+    agents.push_back(agent_1);
+
+    MAPPGridState grid( agents, 10, 10, 5 );
+    vector<MAPPGridState> successors = grid.successors();
+    
+    agents = { Agent(1, 0, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(0), MAPPGridState(agents, 10, 10, 5));
+
+    agents = { Agent(0, 1, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(1), MAPPGridState(agents, 10, 10, 5));
+
+    EXPECT_EQ(successors.size(), 2);
+
+    MAPPGridState::walls.push_back( Wall(1,0) );
+    successors = grid.successors();
+    EXPECT_EQ(successors.size(),1);
+ 
+    agents = { Agent(0, 1, 10,15,"Agent 1") };
+    EXPECT_EQ(successors.at(0), 
+    MAPPGridState(agents, 10, 10, 5));
+
+    agents = { Agent(5, 5, 10, 15, "Agent 1") };
+    MAPPGridState grid2(agents, 10, 10, 5);
+    successors = grid2.successors();
+
+    EXPECT_EQ(successors.size(), 4);
+
+    agents = { Agent(6, 5, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(0), MAPPGridState(agents,10,10,5));
+    agents = { Agent(4, 5, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(1), MAPPGridState(agents,10,10,5));
+    agents = { Agent(5, 6, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(2), MAPPGridState(agents,10,10,5));
+    agents = { Agent(5, 4, 10, 15, "Agent 1")};
+    EXPECT_EQ(successors.at(3), MAPPGridState(agents,10,10,5));
+}
+
+TEST_F(AstarTests, ASTAR_ALGO)
+{
+   std::vector<Agent>test_agents =
+    {Agent(0,0,    3,3,  "Agent 1"),
+     Agent(1,1,    2,2,  "Agent 2"),
+     Agent(0,1,    2,3,  "Agent 3"),
+     Agent(1,0,    3,2,  "Agent 4")};
+
+    MAPPGridState grid( test_agents, 8, 7, 0 );
+    std::vector<MAPPGridState> results = Astar::astar(grid);
+    EXPECT_EQ(results.back().getF(), 16);
+
+    std::vector<Agent>test_agents_2 =
+    {Agent(2,4,    11,4,  "Agent 1"),
+     Agent(3,4,    10,4,  "Agent 2"),
+     Agent(10,4,   3,4,  "Agent 3"),
+     Agent(11,4,   4,4,  "Agent 4")};
+    MAPPGridState::walls.push_back(Wall(3,8));
+    MAPPGridState::walls.push_back(Wall(3,7));
+    MAPPGridState::walls.push_back(Wall(3,6));
+    MAPPGridState::walls.push_back(Wall(3,5));
+    MAPPGridState::walls.push_back(Wall(4,5));
+    MAPPGridState::walls.push_back(Wall(5,5));
+    MAPPGridState::walls.push_back(Wall(6,5));
+    MAPPGridState::walls.push_back(Wall(7,5));
+    MAPPGridState::walls.push_back(Wall(8,5));
+    MAPPGridState::walls.push_back(Wall(9,5));
+    MAPPGridState::walls.push_back(Wall(10,5));
+    MAPPGridState::walls.push_back(Wall(3,3));
+    MAPPGridState::walls.push_back(Wall(4,3));
+    MAPPGridState::walls.push_back(Wall(5,3));
+    MAPPGridState::walls.push_back(Wall(8,3));
+    MAPPGridState::walls.push_back(Wall(9,3));
+    MAPPGridState::walls.push_back(Wall(10,3));
+    MAPPGridState::walls.push_back(Wall(3,2));
+    MAPPGridState::walls.push_back(Wall(4,2));
+    MAPPGridState::walls.push_back(Wall(5,2));
+    MAPPGridState::walls.push_back(Wall(6,2));
+    MAPPGridState::walls.push_back(Wall(7,2));
+    MAPPGridState::walls.push_back(Wall(8,2));
+    MAPPGridState::walls.push_back(Wall(8,1));
+    MAPPGridState::walls.push_back(Wall(8,0));
+
+    MAPPGridState grid2( test_agents_2, 13, 9, 0 );
+    std::vector<MAPPGridState> results2 = Astar::astar(grid2);
+    EXPECT_EQ(results2.back().getF(), 34);
+
+    MAPPGridState::walls.clear();
+
+
+    std::vector<Agent>test_agents3 =
+    {Agent(2,4,    8,1,  "Agent 1"),
+     Agent(3,4,    9,1,  "Agent 2"),
+     Agent(2,3,    8,0,  "Agent 3"),
+     Agent(3,3,    9,0,  "Agent 4")};
+
+    MAPPGridState grid3( test_agents3, 11, 7, 0 );
+    std::vector<MAPPGridState> results3 = Astar::astar(grid3);
+    EXPECT_EQ(results3.back().getF(), 36);
 }

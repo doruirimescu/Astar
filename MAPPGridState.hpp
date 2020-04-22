@@ -20,6 +20,10 @@ class MAPPGridState
             {
                 return currentHeuristic;
             }
+            inline void setCost( unsigned int c ){ currentCost = c; }
+            inline unsigned int getXsize()const{ return xsize; }
+            inline unsigned int getYsize()const{ return ysize; }
+
             static bool hasWallAt( int x, int y )
             {
                 /*
@@ -56,9 +60,12 @@ class MAPPGridState
             void show() const;
 
             bool operator ==( const MAPPGridState &a)const;
-
-        std::vector<Agent>agents;
         static std::vector<Wall>walls;
+        
+        friend struct std::less<MAPPGridState>;
+        friend struct std::hash<MAPPGridState>;
+        private:
+        std::vector<Agent>agents;
         unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
 
@@ -82,10 +89,11 @@ namespace std
         size_t operator()(const MAPPGridState &k) const
         {
             size_t hash = 0;
+            unsigned int xsize = k.getXsize();
+            unsigned int ysize = k.getYsize();
             for( const Agent &agent : k.agents )
             {
-                hash = hash * (k.xsize * k.ysize) + agent.getX() + 
-                    k.xsize * agent.getY();
+                hash = hash * (xsize * ysize) + agent.getX() + xsize * agent.getY();
             }
             return hash;
         }
