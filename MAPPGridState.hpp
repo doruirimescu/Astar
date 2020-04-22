@@ -1,7 +1,7 @@
 #pragma once
 #include "agent.hpp"
 #include "wall.hpp"
-#include<vector>
+#include <vector>
 
 class MAPPGridState
 {
