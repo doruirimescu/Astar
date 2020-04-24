@@ -1,7 +1,7 @@
 #pragma once
 #include "heuristic.hpp"
-#include <string>
-#include <iostream>
+#include "porting.hpp"
+using namespace porting;
 
 class Agent
 {
@@ -12,7 +12,7 @@ class Agent
     */
 
     public:
-        Agent(int x, int y, int gx, int gy, std::string l): X(x), Y(y), 
+        Agent(int x, int y, int gx, int gy, string l): X(x), Y(y), 
                                             goalX(gx), goalY(gy), label(l){};
 
         int getX() const { return X; };
@@ -21,7 +21,7 @@ class Agent
         int getGoalX() const { return goalX; };
         int getGoalY() const { return goalY; };
 
-        std::string getLabel() const { return label; };
+        string getLabel() const { return label; };
 
         void setX(int x) { X = x; };
         void setY(int y) { Y = y; };
@@ -36,5 +36,5 @@ class Agent
     private:
         int X, Y;
         int goalX, goalY;
-        std::string label;
+        string label;
 };
