@@ -1,9 +1,9 @@
-#include "agent.hpp"
+#include "Agent.hpp"
 
 void Agent::show() const
 {/* Print agent information */
-    std::cout << label << " at:(" << X << ", " << Y << ")" << " goal: (" << goalX <<
-    ", "<< goalY << ")" << " heuristic: " << getH() << std::endl;
+    OUTPUT << label << " at:(" << X << ", " << Y << ")" << " goal: (" << goalX <<
+    ", "<< goalY << ")" << " heuristic: " << getH() << endline;
 }
 
 bool Agent::operator == (const Agent &a)const

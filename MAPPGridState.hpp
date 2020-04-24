@@ -1,8 +1,9 @@
 #pragma once
-#include "agent.hpp"
-#include "wall.hpp"
-#include<vector>
+#include "Agent.hpp"
+#include "Wall.hpp"
+#include "porting.hpp"
 
+using namespace porting;
 class MAPPGridState
 {
     /*
@@ -11,7 +12,7 @@ class MAPPGridState
     *   y size of the grid.
     */
     public:
-            MAPPGridState( std::vector<Agent>&agents, unsigned int xsize, unsigned int ysize, unsigned int cost );
+            MAPPGridState( vector<Agent>&agents, unsigned int xsize, unsigned int ysize, unsigned int cost );
             inline unsigned int getF() const
             {
                 return currentCost + currentHeuristic;
@@ -39,7 +40,7 @@ class MAPPGridState
                 return false;
             }
 
-            void succCoords( std::vector<Agent> &ret, const Agent &a ) const;
+            void succCoords( vector<Agent> &ret, const Agent &a ) const;
 
             inline bool sameCoord( const Agent &a, const Agent &b )
             {
@@ -53,20 +54,21 @@ class MAPPGridState
                 return false;
             }
 
-            bool goodSuccessor( const std::vector<Agent> &successor );
+            bool goodSuccessor( const vector<Agent> &successor );
 
-            std::vector<MAPPGridState> successors();
+            vector<MAPPGridState> successors();
 
             void show() const;
 
             bool operator ==( const MAPPGridState &a)const;
-        static std::vector<Wall>walls;
-        
-        friend struct std::less<MAPPGridState>;
-        friend struct std::hash<MAPPGridState>;
+            static vector<Wall>walls;
+            
+            friend less<MAPPGridState>;
+            friend hash<MAPPGridState>;
+            
         private:
-        std::vector<Agent>agents;
-        unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
+            vector<Agent>agents;
+            unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
 
 

@@ -1,15 +1,19 @@
-#include "astar.hpp"
-std::vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
+#include "Astar.hpp"
+vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
 {
-        std::vector<MAPPGridState> newStates = grid.successors();
+        vector<MAPPGridState> newStates = grid.successors();
 
+        if( newStates.size() == 0 )
+        {/* There is no valid successor */
+            return {grid};
+        }
         /* A* algo */
-        std::priority_queue<MAPPGridState, std::vector<MAPPGridState>> Q;
+        priority_queue<MAPPGridState, vector<MAPPGridState>> Q;
         Q.push( grid );
         
         MAPPGridState n = grid;
-        std::unordered_map<MAPPGridState, MAPPGridState> predecessors;
-        std::unordered_map<MAPPGridState, unsigned int> minCost;
+        unordered_map<MAPPGridState, MAPPGridState> predecessors;
+        unordered_map<MAPPGridState, unsigned int> minCost;
 
         minCost.insert({n,0});
         bool going = true;
@@ -35,12 +39,12 @@ std::vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
             if( n.getH() == 0 )
             {
                 going = false;
-                std::cout<<"Found a result"<<std::endl;
+                OUTPUT<<"Found a result"<<endline;
             }
         }
         
-        /* std::vector that holds state trajectory */
-        std::vector<MAPPGridState> results;
+        /* vector that holds state trajectory */
+        vector<MAPPGridState> results;
         results.reserve(10);
 
         results.emplace_back(n);

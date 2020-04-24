@@ -7,9 +7,10 @@ set(Sources
 AstarTests.cpp
 )
 set(Headers 
-wall.hpp
+Wall.hpp
 heuristic.hpp
-agent.hpp
+Agent.hpp
+porting.hpp
 )
 add_executable(${This} ${Sources})
 

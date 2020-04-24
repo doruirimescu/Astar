@@ -1,12 +1,12 @@
 #pragma once
 #include "MAPPGridState.hpp"
-#include <unordered_map>
-#include <queue>
-#include<algorithm>
+#include "porting.hpp"
+#include <algorithm>
+using namespace porting;
 
 namespace Astar
 {
-    inline unsigned int mapRetrieve(const std::unordered_map<MAPPGridState, unsigned int> &m,
+    inline unsigned int mapRetrieve(const unordered_map<MAPPGridState, unsigned int> &m,
                         const MAPPGridState &n)
     {
         if ( m.find(n) != m.end() )
@@ -18,6 +18,6 @@ namespace Astar
             return 10000;
         }
     }
-    std::vector<MAPPGridState> astar( MAPPGridState &grid );
+    vector<MAPPGridState> astar( MAPPGridState &grid );
     
 };

@@ -1,6 +1,6 @@
 #include "MAPPGridState.hpp"
 
-MAPPGridState::MAPPGridState( std::vector<Agent>&agents, unsigned int xsize, unsigned int ysize, unsigned int cost )
+MAPPGridState::MAPPGridState( vector<Agent>&agents, unsigned int xsize, unsigned int ysize, unsigned int cost )
 {
     this->agents =agents;
     this->xsize  = xsize;
@@ -15,10 +15,10 @@ MAPPGridState::MAPPGridState( std::vector<Agent>&agents, unsigned int xsize, uns
     }
     currentCost = cost;
 }
-void MAPPGridState::succCoords( std::vector<Agent> &ret, const Agent &a ) const
+void MAPPGridState::succCoords( vector<Agent> &ret, const Agent &a ) const
 {  /* 
     * Take an Agent, move it right, left, up, down, and return
-    * the new std::vector of Agents. But check for border and wall
+    * the new vector of Agents. But check for border and wall
     * collisions.
     */ 
     int x = a.getX();
@@ -43,7 +43,7 @@ void MAPPGridState::succCoords( std::vector<Agent> &ret, const Agent &a ) const
     }
 }
 
-bool MAPPGridState::goodSuccessor( const std::vector<Agent> &successor )
+bool MAPPGridState::goodSuccessor( const vector<Agent> &successor )
 {
     /*
      * If the new successor is valid (no two agents are at the same coords)
@@ -67,13 +67,13 @@ bool MAPPGridState::goodSuccessor( const std::vector<Agent> &successor )
     return true;
 }
 
-std::vector<MAPPGridState> MAPPGridState::successors()
+vector<MAPPGridState> MAPPGridState::successors()
 {
     /*
-     * Return the std::vector of successor states
+     * Return the vector of successor states
      */ 
-    std::vector<Agent> newCoords[numberAgents];
-    std::vector<MAPPGridState> newStates;
+    vector<Agent> newCoords[numberAgents];
+    vector<MAPPGridState> newStates;
     
     /* There cannot be more than 4 new states (up, down, left, right) */
     newStates.reserve(4);
@@ -98,7 +98,7 @@ std::vector<MAPPGridState> MAPPGridState::successors()
             /* Make a copy of the agent whose position will be modified */
             Agent tmp    = agents.at(i);
 
-            /* Now, the agents std::vector holds the successor candidate position */
+            /* Now, the agents vector holds the successor candidate position */
             agents.at(i) = newCoords[ i ][ j ];
             
             if( goodSuccessor(agents) )
@@ -126,13 +126,13 @@ void MAPPGridState::show()const
    /* 
     * Print state information
     */ 
-    std::cout << std::endl << "--------PRINTING STATE--------" << std::endl << std::endl;
+    OUTPUT << endline << "--------PRINTING STATE--------" << endline << endline;
     for( const auto &i : agents )
     {
         i.show();
     }
-    std::cout << "G  " << currentCost <<" H: " << currentHeuristic << " F: " << 
-              this->getF() << std::endl;
+    OUTPUT << "G  " << currentCost <<" H: " << currentHeuristic << " F: " << 
+              this->getF() << endline;
 }
 bool MAPPGridState::operator ==( const MAPPGridState &a)const
 {

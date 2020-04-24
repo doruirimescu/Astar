@@ -13,17 +13,18 @@ add_subdirectory(googletest)
 
 
 set(Headers 
-    wall.hpp
+    Wall.hpp
     heuristic.hpp
     MAPPGridState.hpp
-    astar.hpp
+    Astar.hpp
+    porting.hpp
 )
 
 set(Sources
     heuristic.cpp
-    agent.cpp
+    Agent.cpp
     MAPPGridState.cpp
-    astar.cpp
+    Astar.cpp
 )
 add_library( ${This} STATIC ${Sources} ${Headers} )
 
