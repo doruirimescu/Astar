@@ -3,6 +3,10 @@ vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
 {
         vector<MAPPGridState> newStates = grid.successors();
 
+        if( newStates.size() == 0 )
+        {/* There is no valid successor */
+            return {grid};
+        }
         /* A* algo */
         priority_queue<MAPPGridState, vector<MAPPGridState>> Q;
         Q.push( grid );
