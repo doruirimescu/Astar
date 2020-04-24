@@ -61,13 +61,14 @@ class MAPPGridState
             void show() const;
 
             bool operator ==( const MAPPGridState &a)const;
-        static vector<Wall>walls;
-        
-        friend less<MAPPGridState>;
-        friend hash<MAPPGridState>;
+            static vector<Wall>walls;
+            
+            friend less<MAPPGridState>;
+            friend hash<MAPPGridState>;
+            
         private:
-        vector<Agent>agents;
-        unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
+            vector<Agent>agents;
+            unsigned int xsize, ysize, numberAgents, currentCost, currentHeuristic;
 };
 
 
