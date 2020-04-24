@@ -11,8 +11,8 @@ vector<Wall> MAPPGridState::walls = {};
 int main()
 {
     /* Create walls */
-    MAPPGridState::walls.emplace_back(Wall(0, 0));
-    MAPPGridState::walls.emplace_back(Wall(0, 5));
+    MAPPGridState::walls.emplace_back(Wall(10, 7));
+    MAPPGridState::walls.emplace_back(Wall(3, 5));
 
     Agent agent_1(0,0,  10,10,  "Agent 1");
     Agent agent_2(0,5,  15,17,  "Agent 2");
