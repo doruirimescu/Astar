@@ -3,9 +3,9 @@
 #include"../MAPPGridState.hpp"
 #include"../astar.hpp"
 #include<gtest/gtest.h>
-using namespace std;
 
-vector<Wall> MAPPGridState::walls = {};
+
+std::vector<Wall> MAPPGridState::walls = {};
 
 struct AstarTests: public ::testing::Test
 {
@@ -132,7 +132,7 @@ TEST_F(AstarTests, SUCC_COORDS_1)
 
 TEST_F(AstarTests, SUCC_COORDS_2)
 {
-    vector<Agent> agents;
+    std::vector<Agent> agents;
     agents.push_back(agent_4);
 
     MAPPGridState grid( agents, 10, 10, 5 );
@@ -140,7 +140,7 @@ TEST_F(AstarTests, SUCC_COORDS_2)
     agents.clear();
     grid.succCoords(agents, agent_4);
 
-    vector<Agent> succAgents;
+    std::vector<Agent> succAgents;
     succAgents.push_back(agent_4);
     succAgents.push_back(agent_4);
     succAgents.push_back(agent_4);
@@ -174,8 +174,8 @@ TEST_F(AstarTests, GOOD_SUCCESSOR)
     * in the successor state, it only matters that the size of the grid.agents
     * and successors are the same.
     */  
-    vector<Agent> agents;
-    vector<Agent> successors;
+    std::vector<Agent> agents;
+    std::vector<Agent> successors;
     agents.push_back(agent_1);
     agents.push_back(agent_2);
     agents.push_back(agent_3);
