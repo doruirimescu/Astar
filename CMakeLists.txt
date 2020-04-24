@@ -17,6 +17,7 @@ set(Headers
     heuristic.hpp
     MAPPGridState.hpp
     astar.hpp
+    porting.hpp
 )
 
 set(Sources
