@@ -1,7 +1,7 @@
 #pragma once
 #include "MAPPGridState.hpp"
 #include "porting.hpp"
-#include<algorithm>
+#include <algorithm>
 using namespace porting;
 
 namespace Astar

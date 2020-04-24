@@ -1,7 +1,7 @@
-#include"../wall.hpp"
-#include"../agent.hpp"
+#include"../Wall.hpp"
+#include"../Agent.hpp"
 #include"../MAPPGridState.hpp"
-#include"../astar.hpp"
+#include"../Astar.hpp"
 #include<gtest/gtest.h>
 
 

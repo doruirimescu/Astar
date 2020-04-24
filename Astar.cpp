@@ -1,4 +1,4 @@
-#include "astar.hpp"
+#include "Astar.hpp"
 vector<MAPPGridState> Astar::astar( MAPPGridState &grid )
 {
         vector<MAPPGridState> newStates = grid.successors();

@@ -1,8 +1,8 @@
 
-#include "astar.hpp"
-#include"wall.hpp"
+#include "Astar.hpp"
+#include "Wall.hpp"
 #include "heuristic.hpp"
-#include"agent.hpp"
+#include "Agent.hpp"
 #include "MAPPGridState.hpp"
 #include "porting.hpp"
 
@@ -11,8 +11,8 @@ vector<Wall> MAPPGridState::walls = {};
 int main()
 {
     /* Create walls */
-    MAPPGridState::walls.push_back(Wall(0, 0));
-    MAPPGridState::walls.push_back(Wall(0, 5));
+    MAPPGridState::walls.emplace_back(Wall(0, 0));
+    MAPPGridState::walls.emplace_back(Wall(0, 5));
 
     Agent agent_1(0,0,  10,10,  "Agent 1");
     Agent agent_2(0,5,  15,17,  "Agent 2");

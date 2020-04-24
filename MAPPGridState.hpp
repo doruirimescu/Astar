@@ -1,6 +1,6 @@
 #pragma once
-#include "agent.hpp"
-#include "wall.hpp"
+#include "Agent.hpp"
+#include "Wall.hpp"
 #include "porting.hpp"
 
 using namespace porting;
