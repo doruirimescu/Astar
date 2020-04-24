@@ -5,7 +5,9 @@ Multi-agent path planning (MAPP) using the A* algorithm. This implementation is 
 
 The problem comprises of a two-dimensional grid, where there are set of agents (each with its own location and goal) and optionally, a set of walls representing locations where no agent can be.
 
-## File descriptions
+Personal motivation: I am making a state machine generator program (QT + Python), which generates code from a state diagram drawn by the user. The user interface needs A* in order to reorganize the arrows, when a state is dragged around.
+
+## File descriptions(
 | Class            | Description                                                                          | Location  |
 | ---------------- | ------------------------------------------------------------------------------------ |-----------|
 | Wall             | A grid location where no agent can be located at any time. _Walls should not be added at any agent's goal coordinates._                            | Wall.hpp  |
