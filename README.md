@@ -1,3 +1,5 @@
+[![Lines Of Code](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/doruirimescu/Astar)
+
 # Description
 **Programming language: C++11 and newer**
 
